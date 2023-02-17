@@ -107,14 +107,17 @@ Una vez se inicialize Docker compose, podremos ingresar a la interfaz de pgadmin
 # GUIA DEL CONSUMO
 ## **CURLS**
 ### Operators
-Method: **GET**
-Observacion: 
-```JSON
-  curl --location 'localhost:8079/operadores/get/operacion/?userid=clientuuid_345555' \
-  --data ''
-```
 
-Method: **POST**
+Nota: todos los servicios registra la data en la BD, independientemente si es Ok o hubo algun error.
+
+- **Metodo**: **POST**
+- **Observación**: 
+- Esta servicio cumple con varias funcionalidades:
+  - Genera un registro, se almacena en una base de datos Postgres y en Redis de forma temporal por 30 minutos.
+  - Si no se ingresa el clientUuid, se genera uno de forma aleatoria.
+  - También valida un AUTH hasta 3 veces, y si se supera la cantidad, se bloquea al usuario por 1 minuto.
+  - Devuelve el resultado de la operación.
+
 ```JSON
 curl --location 'localhost:8079/operadores/save/operacion/' \
 --header 'xauth: wilson3042258679' \
@@ -125,19 +128,172 @@ curl --location 'localhost:8079/operadores/save/operacion/' \
     "clientUuid": "clientuuid_345555"
 }'
 ```
+**Resultado**
+```JSON
+{
+  "responseCode": 0,
+  "responseDescription": "string",
+  "responseContent": {
+    "clientUuid": "string",
+    "value": 0,
+    "status": true
+  }
+}
+```
+
+- **Metodo**: GET
+- **Observación**: 
+- Este servicio cumple con varias funcionalidades:
+  - Permite realizar hasta 3 consultas al mismo usuario. Si se supera la cantidad, el usuario se bloquea por 1 minuto. Después de ese tiempo, se desbloquea y se le permite continuar con el flujo.
+  - Primero realiza una consulta en Redis. Si no encuentra el resultado, busca en la base de datos Postgres, el state que esté marcado como **TRUE**
+  - Devuelve el resultado de la consulta
+
+```JSON
+  curl --location 'localhost:8079/operadores/get/operacion/?userid=clientuuid_345555' \
+  --data ''
+```
+**Resultado**
+```JSON
+{
+  "responseCode": 0,
+  "responseDescription": "string",
+  "responseContent": {
+    "id": 0,
+    "clientUuid": "string",
+    "action": "string",
+    "value": 0,
+    "state": true,
+    "responseCode": 0,
+    "responseDescription": "string",
+    "startDate": "2023-02-17T19:30:31.402Z",
+    "localDate": "2023-02-17T19:30:31.402Z",
+    "expiration": "string"
+  }
+}
+```
+
 ## UserHistory
-Method: **GET**
+- **Metodo**: **GET**
+- **Observación**: 
+- Este servicio cumple con varias funcionalidades:
+  - Devuelve el resultado completo del historial de toda la base de datos
 ```JSON
-curl --location 'http://localhost:8079/history/get/list/operacion/1/12' \
+curl --location 'http://localhost:8079/history/get/list/operacion/{page}/{size}' \
 --data ''
 ```
-Method: **GET**
+**Resultado**
 ```JSON
-curl --location 'http://localhost:8079/history/get/list/operacion/0/4/?clientuuid=clientuuid_f3eb5415-b25c-48d5-98fb-f57a9d3ee1ed_15%2F02%2F2023_02%3A58%3A00' \
+{
+  "responseCode": 0,
+  "responseDescription": "string",
+  "responseContent": {
+    "totalElements": 0,
+    "totalPages": 0,
+    "first": true,
+    "last": true,
+    "numberOfElements": 0,
+    "pageable": {
+      "pageNumber": 0,
+      "pageSize": 0,
+      "unpaged": true,
+      "paged": true,
+      "offset": 0,
+      "sort": {
+        "sorted": true,
+        "unsorted": true,
+        "empty": true
+      }
+    },
+    "size": 0,
+    "content": [
+      {
+        "id": 0,
+        "clientUuid": "string",
+        "action": "string",
+        "value": 0,
+        "state": true,
+        "responseCode": 0,
+        "responseDescription": "string",
+        "startDate": "2023-02-17T19:31:27.466Z",
+        "localDate": "2023-02-17T19:31:27.466Z"
+      }
+    ],
+    "number": 0,
+    "sort": {
+      "sorted": true,
+      "unsorted": true,
+      "empty": true
+    },
+    "empty": true
+  }
+}
+```
+- **Metodo**: **GET**
+- Este servicio cumple con varias funcionalidades:
+  - Devuelve el resultado completo del historial del ClientUuid que especifiquemos
+```JSON
+curl --location 'http://localhost:8079/history/get/list/operacion/{page}/{size}/?clientuuid=clientuuid_f3eb5415-b25c-48d5-98fb-f57a9d3ee1ed_15%2F02%2F2023_02%3A58%3A00' \
 --data ''
 ```
+**Resultado**
+```JSON
+{
+  "responseCode": 0,
+  "responseDescription": "string",
+  "responseContent": {
+    "totalElements": 0,
+    "totalPages": 0,
+    "first": true,
+    "last": true,
+    "numberOfElements": 0,
+    "pageable": {
+      "pageNumber": 0,
+      "pageSize": 0,
+      "unpaged": true,
+      "paged": true,
+      "offset": 0,
+      "sort": {
+        "sorted": true,
+        "unsorted": true,
+        "empty": true
+      }
+    },
+    "size": 0,
+    "content": [
+      {
+        "id": 0,
+        "clientUuid": "string",
+        "action": "string",
+        "value": 0,
+        "state": true,
+        "responseCode": 0,
+        "responseDescription": "string",
+        "startDate": "2023-02-17T19:31:49.059Z",
+        "localDate": "2023-02-17T19:31:49.059Z"
+      }
+    ],
+    "number": 0,
+    "sort": {
+      "sorted": true,
+      "unsorted": true,
+      "empty": true
+    },
+    "empty": true
+  }
+}
+```
+
+|PARAMETRO| TIPO   | VALOR    |
+|:--------|:-------|:---------|
+| `Page`  | `int`  | `0`      |
+| `Size`  | `int`  | `1`    |
+
 ## Porcentaje
-Method: **POST**
+- **Metodo**: **POST**
+- **Observación**: 
+- Este servicio cumple con varias funcionalidades:
+  - Cumple la función de simular un servicio externo
+  - Realiza operaciones matemáticas y devuelve un resultado
 ```JSON
 curl --location 'http://localhost:8078/porcentaje/operacion/?client-id=clientuuid_dfda28f2-ef2d-4328-846f-fbb41dd96362_29%2F01%2F2023_15%3A16%3A25' \
 --header 'api-auth: wilson3042258679' \
@@ -148,7 +304,3 @@ curl --location 'http://localhost:8078/porcentaje/operacion/?client-id=clientuui
 }'
 ```
 
-| PARAMETRO         | TIPO      | VALOR     |
-| :--------         | :-------  | :---------|
-| `paginaActual`    | `int`     | `1`       |
-| `paginacion`      | `int`     | `100`     |
