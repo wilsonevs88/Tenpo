@@ -1,0 +1,93 @@
+
+version: "3.8"
+
+services:
+
+  postgres:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    ports:
+      - "5432-5432"
+    env_file:
+      - environment-docker.env
+    volumes:
+      - ./sql/create_schema.sql:/docker-entrypoint-initdb.d/create_schema.sl
+      - ./sql/data.sql:/docker-entrypoint-initdb.d/data.sl
+    networks:
+      lan:
+        aliases:
+          - net_postgres
+
+    
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "wilsonev.saldarriaga88@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+    ports:
+      - "80:80"
+    env_file:
+      - environment-docker.env
+    depends_on:
+      - postgres
+    networks:
+      lan:
+        aliases:
+          - net_pgadmin
+
+  redis:
+    image: redis:alpine3.17
+    container_name: redis
+    restart: always
+    command: [ "redis-server", "--protected-mode", "no" ]
+    ports:
+      - "6379:6379"
+    env_file:
+      - environment-docker.env
+    volumes:
+      - ./data:/data
+    networks:
+      lan:
+        aliases:
+          - net_redis
+
+  # porcentaje:
+  #   image: 'porcentaje-wilson-tenpo:latest'
+  #   build:
+  #     context: /porcentaje-wilson-tenpo
+  #     dockerfile: Dockerfile
+  #   container_name: porcentaje
+  #   depends_on:
+  #     - postgres
+  #   ports:
+  #     - 8078:8078
+  #   networks:
+  #     lan:
+  #       aliases:
+  #         - net_porcentaje
+
+  # suma:
+  #   image: 'suma-wilson-tenpo:latest'
+  #   build:
+  #     context: /suma-wilson-tenpo
+  #     dockerfile: Dockerfile
+  #   container_name: suma
+  #   depends_on:
+  #     - postgres
+  #     - redis
+  #     - porcentaje
+  #   ports:
+  #     - 8079:8079
+  #   networks:
+  #     lan:
+  #       aliases:
+  #         - net_suma
+
+networks:
+  lan:
+    name: net_all
+    driver: bridge
+    ipam:
+      driver: default
+
