@@ -1,0 +1,218 @@
+{
+	"info": {
+		"_postman_id": "a34e20ce-d5f7-4e4c-ad6e-813b6c5a46d1",
+		"name": "Tenpo",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13129633"
+	},
+	"item": [
+		{
+			"name": "Operators",
+			"item": [
+				{
+					"name": "Operadores - Get",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8079/operadores/get/operacion/?userid=clientuuid_345555",
+							"host": [
+								"localhost"
+							],
+							"port": "8079",
+							"path": [
+								"operadores",
+								"get",
+								"operacion",
+								""
+							],
+							"query": [
+								{
+									"key": "userid",
+									"value": "clientuuid_345555"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Operadores - Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "xauth",
+								"value": "wilson3042258679",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"valueUno\": 10,\r\n    \"valueDos\": 2,\r\n    \"clientUuid\": \"clientuuid_345555\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8079/operadores/save/operacion/",
+							"host": [
+								"localhost"
+							],
+							"port": "8079",
+							"path": [
+								"operadores",
+								"save",
+								"operacion",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "UserHistory",
+			"item": [
+				{
+					"name": "History- GetListAll",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}:{{79}}/history/get/list/operacion/1/12",
+							"host": [
+								"{{local}}"
+							],
+							"port": "{{79}}",
+							"path": [
+								"history",
+								"get",
+								"list",
+								"operacion",
+								"1",
+								"12"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "History- GetListClientUuid",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}:{{79}}/history/get/list/operacion/0/4/?clientuuid=clientuuid_f3eb5415-b25c-48d5-98fb-f57a9d3ee1ed_15/02/2023_02:58:00",
+							"host": [
+								"{{local}}"
+							],
+							"port": "{{79}}",
+							"path": [
+								"history",
+								"get",
+								"list",
+								"operacion",
+								"0",
+								"4",
+								""
+							],
+							"query": [
+								{
+									"key": "clientuuid",
+									"value": "clientuuid_f3eb5415-b25c-48d5-98fb-f57a9d3ee1ed_15/02/2023_02:58:00"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Porcentaje",
+			"item": [
+				{
+					"name": "Porcentaje - Post",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "api-auth",
+								"value": "wilson3042258679",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n  \"valueSuma\": 10.5,\r\n  \"porcentaje\": 10.7\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{local}}:{{78}}/porcentaje/operacion/?client-id=clientuuid_dfda28f2-ef2d-4328-846f-fbb41dd96362_29/01/2023_15:16:25",
+							"host": [
+								"{{local}}"
+							],
+							"port": "{{78}}",
+							"path": [
+								"porcentaje",
+								"operacion",
+								""
+							],
+							"query": [
+								{
+									"key": "client-id",
+									"value": "clientuuid_dfda28f2-ef2d-4328-846f-fbb41dd96362_29/01/2023_15:16:25"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

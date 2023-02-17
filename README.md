@@ -57,48 +57,46 @@ Sql, NoSql y despliegue en tomcat.
 - [@Linkedin/wilsonevs](https://www.linkedin.com/in/wilsonvalencs/)
 - [@Torre/wilsonevs](https://torre.co/wilson_evs)
 
-## Instalación
+# Instalación
 
-1.  Dentro de la carpeta `Tenpo` se encuentra 3 proyectos que son los siguientes:
-    - **`lib-wilson-tenpo`**: Es una libreria donde se almacena los models, status y exception de los proyectos en general
+1.  Dentro de la carpeta `Tenpo` se encuentra 2 proyectos que son los siguientes:
     - **`suma-wilson-tenpo`**: Es el proyecto principal
     - **`porcentaje-wilson-tenpo`**: Es el proyecto segundario (Externo)
 
-2.  Los 3 proyectos debemos generar .jar en este orden: primero **`lib-wilson-tenpo`**, seguidos **`suma-wilson-tenpo`** y por ultimo **`porcentaje-wilson-tenpo`**. para generar sus respectios .jar dejo las siguientes comandos:
-    -   Opción 1 (Eclipse):
-        ```
-        Maven build...
-        ```
-    -   Opción 2 (IntelliJ IDEA):
-        ```
-        mvn clean install
-        mvn clean package
-        ```
-        **`Nota`**
-        ```
-        Si por algun motivo, los proyectos no le estan permitiendo empaquetarlo, o sale algun error que no le permite continuar, como ultimo recurso debes dirigirte a la carpeta .m2 que por lo general se encuentra dentro del usuario de nuestro equipo de forma oculta. debes ingresar dentro de esta y borrar el archivo `repository`, y volver a realizar los pasos anteriores.
-        ```
-
-3.  Dentro de la carpeta Tenpo, se encuentra un archivo llamado **docker-compose.yml** que es el encargado de ejecutar los dos proyectos, solo debe levantarlo, con el siguiente comando:
+2. Para levantar nuestro 2 proyectos antes debemos haer unos pasos posteriores:
+    - **Paso 1**: Tener previamente, instalado docker, dejo el link de instalación [Docker](https://docs.docker.com/engine/install/)
+    - **Paso 2**: Buscar archivo llamado **docker-compose.yml**
+    - **Paso 3**: procedemos a levantar, el docker-compose, con el comando siguiente:
     ```
     docker-compose up -d --build
+    ``` 
+    - **Paso 4**: Una vez que las imágenes se instalen e inicialicen, procedemos a validar el primer puerto que nos muestra la imagen de Postgres. Para ello, debemos abrir una terminal e ingresar el siguiente comando, que nos permitirá mostrar todas las imágenes que están en UP:
     ```
+    docker ps -a
+    ``` 
+     - **Paso 5**: Una vez obtengamos, el número del puerto, vamos a cada uno de nuestros proyectos y buscamos el archivo llamado application.properties
+        - **`suma-wilson-tenpo`**: spring.datasource.url=jdbc:postgresql://localhost:**(Cambiar puerto)**/tenpo
+        - **`porcentaje-wilson-tenpo`**: spring.datasource.url=jdbc:postgresql://localhost:**(Cambiar puerto)**/tenpo
+    - **Paso 6**: procedemos a ejecutar nuestros 2 proyectos, en el cual debe ser en orden, primero **`porcentaje-wilson-tenpo`**  y luego  **`suma-wilson-tenpo`**.
 
 ## Acceder al Swagger
 Se implemento para que pudiera vizualizar los Api de los proyectos:
-- `suma-wilson-tenpo`: [Swagger](http://localhost:8081/swagger-ui/index.html)
-- `porcentaje-wilson-tenpo`: [Swagger](http://localhost:8082/swagger-ui/index.html)
+- `suma-wilson-tenpo`: [suma-wilson-tenpo](http://localhost:8079/swagger-ui/index.html)
+- `porcentaje-wilson-tenpo`: [porcentaje-wilson-tenpo](http://localhost:8078/swagger-ui/index.html)
+
+## Acceder Postamen
+Se debe importar el archivo llamado **Tenpo.postman_collection** de postaman
 
 
 ## Postgress
-Una vez se inicialize Docker compose, ingresamos a la interfaz de pgadmin4 http://localhost/login de la base de datos, donde nos va a pedir lo Email/Password.
+Una vez se inicialize Docker compose, podremos ingresar a la interfaz de pgadmin4 [Postgress](http://localhost/login) de la base de datos, donde nos va a pedir lo Email/Password.
 
 - **Email:** wilsonev.saldarriaga88@gmail.com 
 - **Password:** admin
 
 ### Servers
 - **General**
-  - **Name**: ConnectionTenpo
+  - **Name**: Tenpo
 - **Connection**
   - **Host name/Addres:** postgres 
   - **Port:** 5432
@@ -106,100 +104,51 @@ Una vez se inicialize Docker compose, ingresamos a la interfaz de pgadmin4 http:
   - **Password:** admin
   - **Name DB:** tenpo
 
+# GUIA DEL CONSUMO
+## **CURLS**
+### Operators
+Method: **GET**
+Observacion: 
+```JSON
+  curl --location 'localhost:8079/operadores/get/operacion/?userid=clientuuid_345555' \
+  --data ''
+```
 
-## API Referencía
-##Nota 
-* Primero se insertar las preguntas
-
-* Segundo en el servicio del estudiante ingresa los datos y las preguntas
-
-
-## GUIA DEL CONSUMO
-
-#### Get - Busqueda completa
-
-
-Ejemplo de como se debe consumir en Postman, 
-
-Todos los servicios del GET se crearón con paginacionasi que debe ingresar lo siguiente
-```http
-  GET http://localhost:8089/fonYou/api/estudiante/?paginaActual=1&paginacion=100
-  GET http://localhost:8089/fonYou/api/pregunta/usuario/?paginaActual=1&paginacion=100
-  GET http://localhost:8089/fonYou/api/respuesta/?paginaActual=1&paginacion=100
+Method: **POST**
+```JSON
+curl --location 'localhost:8079/operadores/save/operacion/' \
+--header 'xauth: wilson3042258679' \
+--header 'Content-Type: application/json' \
+--data '{
+    "valueUno": 10,
+    "valueDos": 2,
+    "clientUuid": "clientuuid_345555"
+}'
+```
+## UserHistory
+Method: **GET**
+```JSON
+curl --location 'http://localhost:8079/history/get/list/operacion/1/12' \
+--data ''
+```
+Method: **GET**
+```JSON
+curl --location 'http://localhost:8079/history/get/list/operacion/0/4/?clientuuid=clientuuid_f3eb5415-b25c-48d5-98fb-f57a9d3ee1ed_15%2F02%2F2023_02%3A58%3A00' \
+--data ''
+```
+## Porcentaje
+Method: **POST**
+```JSON
+curl --location 'http://localhost:8078/porcentaje/operacion/?client-id=clientuuid_dfda28f2-ef2d-4328-846f-fbb41dd96362_29%2F01%2F2023_15%3A16%3A25' \
+--header 'api-auth: wilson3042258679' \
+--header 'Content-Type: application/json' \
+--data '{
+  "valueSuma": 10.5,
+  "porcentaje": 10.7
+}'
 ```
 
 | PARAMETRO         | TIPO      | VALOR     |
 | :--------         | :-------  | :---------|
 | `paginaActual`    | `int`     | `1`       |
-| `paginacion`      | `int`     | `100`       |
-
-#### Get - Busqueda por ID
-
-```http
-  GET http://localhost:8089/fonYou/api/estudiante/1
-```
-
-#### Post
-
-```http
-  POST http://localhost:8089/fonYou/api/estudiante/
-```
-
-```JSON
-{
-  "nombre": "Wilson Valencia 2",
-  "edad": "33",
-  "ciudad": "Medellín",
-  "zona_horaria": "2022/03/26 22:00:00",
-  "respuesta": [
-    {
-      "id_pregunta": 1,
-      "respuesta": "a"
-    },
-    {
-      "id_pregunta": 2,
-      "respuesta": "b"
-    },
-    {
-      "id_pregunta": 3,
-      "respuesta": "a"
-    }
-  ]
-}
-```
-
-#### Put
-
-```http
-  PUT http://localhost:8089/wilsonevs/api/estudiante/
-```
-
-```JSON
-{
-  "id_estudiante": 1,
-  "nombre": "Wilson Valencia 2",
-  "edad": "33",
-  "ciudad": "Medellín",
-  "zona_horaria": "2022/03/26 22:00:00",
-  "respuesta": [
-    {
-      "id_pregunta": 1,
-      "respuesta": "a"
-    },
-    {
-      "id_pregunta": 2,
-      "respuesta": "b"
-    },
-    {
-      "id_pregunta": 3,
-      "respuesta": "a"
-    }
-  ]
-}
-```
-
-
-#### DELETE - Eliminación por ID
-
-```http
-  DELETE http://localhost:8089/fonYou/api/estudiante/1
+| `paginacion`      | `int`     | `100`     |
